@@ -1,3 +1,4 @@
+using MealDraft.API.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MealDraft.API.Controllers;
@@ -6,9 +7,15 @@ namespace MealDraft.API.Controllers;
 [Route("[controller]")]
 public class MealsController : ControllerBase
 {
+    private static readonly List<Meal> _meals = [];
+
     [HttpGet]
-    public IActionResult GetAll()
+    public IActionResult GetAll() => Ok(_meals);
+
+    [HttpPost]
+    public IActionResult Create(Meal meal)
     {
-        return Ok("MealDraft is alive 🍽️");
+        _meals.Add(meal);
+        return CreatedAtAction(nameof(GetAll), new { id = meal.Id }, meal);
     }
 }
