@@ -1,4 +1,5 @@
 using MealDraft.API.Models;
+using MealDraft.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MealDraft.API.Controllers;
@@ -7,46 +8,41 @@ namespace MealDraft.API.Controllers;
 [Route("[controller]")]
 public class MealsController : ControllerBase
 {
-    private static readonly List<Meal> _meals = [];
+    private readonly IMealService _mealService;
+
+    public MealsController(IMealService mealService)
+    {
+        _mealService = mealService;
+    }
 
     [HttpGet]
-    public IActionResult GetAll() => Ok(_meals);
+    public IActionResult GetAll() => Ok(_mealService.GetAll());
 
     [HttpGet("{id}")]
     public IActionResult GetById(Guid id)
     {
-        var meal = _meals.FirstOrDefault(m => m.Id == id);
+        var meal = _mealService.GetById(id);
         return meal is null ? NotFound() : Ok(meal);
     }
 
     [HttpPost]
     public IActionResult Create(Meal meal)
     {
-        _meals.Add(meal);
-        return CreatedAtAction(nameof(GetAll), new { id = meal.Id }, meal);
+        var created = _mealService.Create(meal);
+        return CreatedAtAction(nameof(GetAll), new { id = created.Id }, created);
     }
 
     [HttpPut("{id}")]
     public IActionResult Update(Guid id, Meal updated)
     {
-        var meal = _meals.FirstOrDefault(m => m.Id == id);
-        if (meal is null) return NotFound();
-
-        meal.Name = updated.Name;
-        meal.Description = updated.Description;
-        meal.PrepTimeMinutes = updated.PrepTimeMinutes;
-        meal.Ingredients = updated.Ingredients;
-
-        return Ok(meal);
+        var meal = _mealService.Update(id, updated);
+        return meal is null ? NotFound() : Ok(meal);
     }
 
     [HttpDelete("{id}")]
     public IActionResult Delete(Guid id)
     {
-        var meal = _meals.FirstOrDefault(m => m.Id == id);
-        if (meal is null) return NotFound();
-
-        _meals.Remove(meal);
-        return NoContent();
+        var deleted = _mealService.Delete(id);
+        return deleted ? NoContent() : NotFound();
     }
 }
