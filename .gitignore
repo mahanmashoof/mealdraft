@@ -72,3 +72,8 @@ publish/
 
 # Coverage results
 coverage/
+
+#db
+*.db
+*.db-shm
+*.db-wal
