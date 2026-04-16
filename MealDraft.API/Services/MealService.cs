@@ -1,46 +1,33 @@
 using MealDraft.API.Models;
-using MealDraft.API.Data;
+using MealDraft.API.Repositories;
 
 namespace MealDraft.API.Services;
 
 public class MealService : IMealService
 {
-    private readonly AppDbContext _db;
+    private readonly IMealRepository _repository;
 
-    public MealService(AppDbContext db) => _db = db;
+    public MealService(IMealRepository repository) => _repository = repository;
 
-    public List<Meal> GetAll() => _db.Meals.ToList();
+    public List<Meal> GetAll() => _repository.GetAll();
 
-    public Meal? GetById(Guid id) => _db.Meals.FirstOrDefault(m => m.Id == id);
+    public Meal? GetById(Guid id) => _repository.GetById(id);
 
-    public Meal Create(Meal meal)
-    {
-        _db.Meals.Add(meal);
-        _db.SaveChanges();
-        return meal;
-    }
+    public Meal Create(Meal meal) =>
+        _repository.Add(meal);
 
     public Meal? Update(Guid id, Meal updated)
     {
-        var meal = _db.Meals.FirstOrDefault(m => m.Id == id);
+        var meal = _repository.GetById(id);
         if (meal is null) return null;
 
         meal.Name = updated.Name;
         meal.Description = updated.Description;
         meal.PrepTimeMinutes = updated.PrepTimeMinutes;
-        meal.Ingredients = updated.Ingredients;
+        //meal.Ingredients = updated.Ingredients; // this will be done separately
 
-        _db.SaveChanges();
-        return meal;
+        return _repository.Update(meal);
     }
 
-    public bool Delete(Guid id)
-    {
-        var meal = _db.Meals.FirstOrDefault(m => m.Id == id);
-        if (meal is null) return false;
-
-        _db.Meals.Remove(meal);
-        _db.SaveChanges();
-        return true;
-    }
+    public bool Delete(Guid id) => _repository.Delete(id);
 }

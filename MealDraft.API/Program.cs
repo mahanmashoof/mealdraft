@@ -1,6 +1,7 @@
 using MealDraft.API.Services;
 using MealDraft.API.Data;
 using Microsoft.EntityFrameworkCore;
+using MealDraft.API.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IMealService, MealService>();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=mealdraft.db"));
+builder.Services.AddScoped<IMealRepository, MealRepository>();
 
 var app = builder.Build();
 
