@@ -24,7 +24,15 @@ public class MealService : IMealService
         meal.Name = updated.Name;
         meal.Description = updated.Description;
         meal.PrepTimeMinutes = updated.PrepTimeMinutes;
-        //meal.Ingredients = updated.Ingredients; // this will be done separately
+        meal.Ingredients = updated.Ingredients
+        .Select(i => new Ingredient
+        {
+            Id = Guid.NewGuid(),
+            Name = i.Name,
+            Unit = i.Unit,
+            Amount = i.Amount,
+            MealId = id
+        }).ToList();
 
         return _repository.Update(meal);
     }

@@ -11,4 +11,13 @@ public class AppDbContext : DbContext
     public DbSet<Ingredient> Ingredients { get; set; }
     public DbSet<MealPlan> MealPlans { get; set; }
     public DbSet<MealPlanEntry> MealPlanEntries { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Meal>()
+            .HasMany(m => m.Ingredients)
+            .WithOne()
+            .HasForeignKey(i => i.MealId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
 }
