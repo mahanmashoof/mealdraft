@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MealDraft.API.Models;
+using MealDraft.API.Services;
 
 namespace MealDraft.API.Controllers;
 
@@ -7,32 +8,34 @@ namespace MealDraft.API.Controllers;
 [Route("[controller]")]
 public class MealPlansController : ControllerBase
 {
-    private static readonly List<MealPlan> _plans = new();
+    private readonly IMealPlanService _mealPlanService;
+
+    public MealPlansController(IMealPlanService mealPlanService)
+    {
+        _mealPlanService = mealPlanService;
+    }
 
     [HttpGet]
-    public IActionResult GetAll() => Ok(_plans);
+    public IActionResult GetAll() => Ok(_mealPlanService.GetAll());
 
     [HttpGet("{id}")]
     public IActionResult GetById(Guid id)
     {
-        var plan = _plans.FirstOrDefault(p => p.Id == id);
+        var plan = _mealPlanService.GetById(id);
         return plan is null ? NotFound() : Ok(plan);
     }
 
     [HttpPost]
     public IActionResult Create(MealPlan plan)
     {
-        _plans.Add(plan);
-        return CreatedAtAction(nameof(GetById), new { id = plan.Id }, plan);
+        var created = _mealPlanService.Create(plan);
+        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
-    [HttpDelete("{id}")]
-    public IActionResult Delete(Guid id)
+    [HttpGet("{id}/shopping-list")]
+    public IActionResult GetShoppingList(Guid id)
     {
-        var plan = _plans.FirstOrDefault(p => p.Id == id);
-        if (plan is null) return NotFound();
-
-        _plans.Remove(plan);
-        return NoContent();
+        var list = _mealPlanService.GetShoppingList(id);
+        return Ok(list);
     }
 }

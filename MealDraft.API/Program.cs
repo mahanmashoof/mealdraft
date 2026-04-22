@@ -24,6 +24,8 @@ builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddScoped<IValidator<Meal>, MealValidator>();
 builder.Services.AddScoped<IValidator<Ingredient>, IngredientValidator>();
 builder.Services.AddScoped<IValidator<MealPlan>, MealPlanValidator>();
+builder.Services.AddScoped<IMealPlanRepository, MealPlanRepository>();
+builder.Services.AddScoped<IMealPlanService, MealPlanService>();
 
 var app = builder.Build();
 
