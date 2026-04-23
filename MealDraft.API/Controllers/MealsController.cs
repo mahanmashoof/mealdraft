@@ -1,6 +1,7 @@
 using MealDraft.API.Models;
 using MealDraft.API.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MealDraft.API.Controllers;
 
@@ -15,6 +16,7 @@ public class MealsController : ControllerBase
         _mealService = mealService;
     }
 
+    [Authorize]
     [HttpGet]
     public IActionResult GetAll() => Ok(_mealService.GetAll());
 
